@@ -2,7 +2,6 @@ package com.example.uts_loan.services.customer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,9 +91,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void putCustomer(Integer id, CustomerRequest requestUpdate) {
-        Optional<Customer> customer = customerRepository.findById(id);
-        if (customer.isPresent()) {
-            Customer ctr = customer.get();
+        Customer ctr = customerRepository.findById(id)
+            .orElseThrow(()-> new IllegalArgumentException("Customer with ID " + id + " not found")); 
 
             if (requestUpdate.getAccountNumber() == null || requestUpdate.getCustomerName() == null ||
                     requestUpdate.getPhone() == null || requestUpdate.getAddress() == null
@@ -121,9 +119,6 @@ public class CustomerServiceImpl implements CustomerService {
             ctr.setCustomerType(requestUpdate.getCustomerType());
 
             customerRepository.save(ctr);
-        } else {
-            throw new IllegalArgumentException("Customer log with ID " + id + " not found");
-        }
     }
 
     @Transactional
